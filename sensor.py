@@ -3,6 +3,7 @@ def find_list_sensordist(word_dicts, allowed):
     list_sensordist = []
     dict_sensordist= {}
 
+
     for sent in allowed.keys():
         print(sent)
 
@@ -16,7 +17,7 @@ def find_list_sensordist(word_dicts, allowed):
 
             if j == False:  # Not swapped
                 print('Adding (no swap):', word_dicts[i][word])
-                sensor_dist += word_dicts[i][word]
+                sensor_dist += word_dicts[i][word] * 0.5
             else:
                 if i == j:
                     print('Adding (at j)', word_dicts[i+1][word])
@@ -24,7 +25,7 @@ def find_list_sensordist(word_dicts, allowed):
                 elif i == j+1:
                     print('Adding (after j)', word_dicts[i-1][word])
                     sensor_dist += word_dicts[i-1][word]  # Find dist in the previous column
-                else: # Not messing with swapped idx
+                else:
                     print('Adding (not j):', word_dicts[i][word])
                     sensor_dist += word_dicts[i][word]
 
@@ -49,6 +50,3 @@ def sort_by_sensor(word_dicts, allowed):
     sorted_sensor = {k: v for k, v in sorted(sensor_dict.items(), reverse=True, key=lambda item: item[1])}
 
     return dict_sensordist, sensor_dict, sorted_sensor
-
-
-
