@@ -27,6 +27,7 @@ if __name__ == '__main__':
                   'ngram_correction']
     data, word_index, class_dict, df = preprocessing.output(empty_cols)
     print(data)
+    print('hi')
     #
     # # df.to_csv('original_data.csv')
     #
