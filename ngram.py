@@ -2,6 +2,7 @@ import googleAPI
 import time
 from csv import DictWriter
 
+
 def erase_noise(sent):
     sent_nonoise = []
     for i, word in enumerate(sent):
@@ -41,14 +42,17 @@ def get_ngram_score(allowed, sent, googlengram, swapped_idx = False):
     elif query in googlengram:
         ngram_score = googlengram[query]
     else:
-        ngram_score = googleAPI.runQuery(query)
-        googlengram[query] = ngram_score
+        ngram_score = 0
 
-        d = {'query': query, 'ngram_score': ngram_score}
-        field_names = ['query', 'ngram_score']
-        with open('googlengram.csv', 'a', newline='') as f:
-            DictWriter(f, fieldnames = field_names).writerow(d)
-            f.close()
+        # # Write googlengram result into csv
+        # ngram_score = googleAPI.runQuery(query)
+        # googlengram[query] = ngram_score
+        #
+        # d = {'query': query, 'ngram_score': ngram_score}
+        # field_names = ['query', 'ngram_score']
+        # with open('googlengram.csv', 'a', newline='') as f:
+        #     DictWriter(f, fieldnames=field_names).writerow(d)
+        #     f.close()
 
     if ngram_score > 0:
         print("Score = ", ngram_score)
@@ -56,15 +60,14 @@ def get_ngram_score(allowed, sent, googlengram, swapped_idx = False):
     return allowed, googlengram
 
 
-def find_allowed(sentences, googlengram):
+def find_allowed(sentences, googlengram, swap=False):
     allowed = []
     delay = 0.2
 
     i = 0
     for sent in sentences:
         i += 1
-        # query = create_query(sent)
-        print("Current sentence no.", i, ":", sent)
+        # print("Current sentence no.", i, ":", sent)
         while True:
             try:
                 # your request code here
@@ -75,30 +78,31 @@ def find_allowed(sentences, googlengram):
                 if delay > 5:
                     delay = 0.2
 
-        # Swapping
-        for j in range(len(sent)):
-            if (j > 0) and (j < (len(sent)-1)):
-                # Create a copy of sent as a list
-                swapped = []
-                for ele in sent:
-                    swapped.append(ele)
+        if swap:
+            # Swapping
+            for j in range(len(sent)):
+                if (j > 0) and (j < (len(sent)-1)):
+                    # Create a copy of sent as a list
+                    swapped = []
+                    for ele in sent:
+                        swapped.append(ele)
 
-                temp = swapped[j]
-                swapped[j] = swapped[j+1]
-                swapped[j+1] = temp
-                swapped = tuple(swapped)
+                    temp = swapped[j]
+                    swapped[j] = swapped[j+1]
+                    swapped[j+1] = temp
+                    swapped = tuple(swapped)
 
-                print("Swapped sentence no.", i, "-", j, ":", swapped)
+                    # print("Swapped sentence no.", i, "-", j, ":", swapped)
 
-                while True:
-                    try:
-                        # your request code here
-                        allowed, googlengram = get_ngram_score(allowed, swapped, googlengram, j)
-                        break  # if the request was successful, break the loop
-                    except Exception as e:
-                        time.sleep(delay)
-                        if delay > 5:
-                            delay = 0.2
+                    while True:
+                        try:
+                            # your request code here
+                            allowed, googlengram = get_ngram_score(allowed, swapped, googlengram, j)
+                            break  # if the request was successful, break the loop
+                        except Exception as e:
+                            time.sleep(delay)
+                            if delay > 5:
+                                delay = 0.2
 
     allowed_dict = {}
     for ele in allowed:
@@ -113,8 +117,8 @@ def find_allowed(sentences, googlengram):
     return allowed_dict, googlengram
 
 
-def ngram_selection(sentences, googlengram):
-    allowed, googlengram = find_allowed(sentences, googlengram)
+def ngram_selection(sentences, googlengram, swap):
+    allowed, googlengram = find_allowed(sentences, googlengram, swap)
     # print("after ngram selection_unsort:", allowed)
 
     # P_big to P_small

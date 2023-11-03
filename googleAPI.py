@@ -46,3 +46,4 @@ def runQuery(query, start_year=2000, end_year=2019, corpus=26, smoothing=2):
 #
 #
 #
+runQuery('do not land here')

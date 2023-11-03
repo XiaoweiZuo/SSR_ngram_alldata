@@ -3,6 +3,8 @@ import preprocessing
 import csv
 import pandas as pd
 import pickle as pkl
+import train
+
 
 def trim(mylist, num):
     for i in range(num):
@@ -26,53 +28,60 @@ if __name__ == '__main__':
                   # 'sortedby_weightedscore',
                   'ngram_correction']
     data, word_index, class_dict, df = preprocessing.output(empty_cols)
-    print(data)
-    print('hi')
-    #
-    # # df.to_csv('original_data.csv')
-    #
-    # # output = balancescores.one_data_point(data, word_index, class_dict, 41)
-    # # # For debugging
-    # # list_data_num = [78, 97]
-    # # list_data_num = [0, 1]
-    # # df = df_ori.loc[list_data_num]
-    # # df = df.reset_index(drop=True)
-    # # print(df)
-    #
-    # filename = 'df.csv'
-    # df.to_csv(filename)
-    #
+    # print(data)
+
+    # df.to_csv('original_data.csv')
+
+    # output = balancescores.one_data_point(data, word_index, class_dict, 41)
+    # # For debugging
+    # list_data_num = [78, 97]
+    # list_data_num = [0, 1]
+    # df = df_ori.loc[list_data_num]
+    # df = df.reset_index(drop=True)
+    # print(df)
+
+    filename = 'df.csv'
+    df.to_csv(filename)
+
+    final_name = 'local_swap_DNA'
+    swap_status = True
+
+    # If localngram
+    train.create_pickel('visual_signals_DoNotAttempt.txt')
+    with open('localngram.pkl', 'rb') as f:
+        googlengram = pkl.load(f)
+    # # If googlengram
     # df_googlengram = pd.read_csv("googlengram.csv")
     # googlengram = {k: list(v.values())[0] for k, v in df_googlengram.set_index('query').to_dict('index').items()}
-    #
-    # for data_num in range(len(df)):
-    #     print("Next data point:", data_num)
-    #
-    #     output, googlengram = balancescores.one_data_point(data, word_index, class_dict, data_num, googlengram)
-    #     row = create_new_row(data_num, df, empty_cols, output)
-    #
-    #     with open(filename, 'a', newline='') as f:
-    #         writer = csv.writer(f)
-    #         writer.writerow(row)
-    #         f.close()
-    #
-    # # df_googlengram = pd.DataFrame.from_dict(googlengram, orient='index')
-    # # df_googlengram.to_csv('googlengram.csv')
-    #
-    # dataset_size = len(df)
-    # df = pd.read_csv('df.csv')
-    # df = df.iloc[dataset_size:].reset_index(drop=True).drop(df.columns[0], axis=1)
-    # df['sensor_accu'] = df.apply(lambda row: 1 if row['pred'] == row['real_truth'] else 0, axis=1)
-    #
-    # df['sensor_accu'] = df.apply(lambda row: 1 if row['pred_decoded_norepeat'] == row['real_truth'] else 0, axis=1)
-    # df['ngram_accu'] = df.apply(lambda row: 1 if row['ngram_correction'] == row['real_truth'] else 0, axis=1)
-    #
-    # with open('df.pkl', 'wb') as f:
-    #     pkl.dump(df, f)
-    #
-    # df.to_csv('df_final.csv')
-    #
-    # sensor_accu = df['sensor_accu'].sum()/len(df)
-    # ngram_accu = df['ngram_accu'].sum()/len(df)
-    # print("sentence accuracy without ngram", sensor_accu*100, '%')
-    # print("sentence accuracy with ngram", ngram_accu*100, '%')
+
+    for data_num in range(len(df)):
+        # print("Next data point:", data_num)
+
+        output, googlengram = balancescores.one_data_point(data, word_index, class_dict, data_num, googlengram, swap=swap_status)
+        row = create_new_row(data_num, df, empty_cols, output)
+
+        with open(filename, 'a', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(row)
+            f.close()
+
+    # df_googlengram = pd.DataFrame.from_dict(googlengram, orient='index')
+    # df_googlengram.to_csv('googlengram.csv')
+
+    dataset_size = len(df)
+    df = pd.read_csv('df.csv')
+    df = df.iloc[dataset_size:].reset_index(drop=True).drop(df.columns[0], axis=1)
+    df['sensor_accu'] = df.apply(lambda row: 1 if row['pred'] == row['real_truth'] else 0, axis=1)
+
+    df['sensor_accu'] = df.apply(lambda row: 1 if row['pred_decoded_norepeat'] == row['real_truth'] else 0, axis=1)
+    df['ngram_accu'] = df.apply(lambda row: 1 if row['ngram_correction'] == row['real_truth'] else 0, axis=1)
+
+    with open('df.pkl', 'wb') as f:
+        pkl.dump(df, f)
+
+    df.to_csv(final_name+'.csv')
+
+    sensor_accu = df['sensor_accu'].sum()/len(df)
+    ngram_accu = df['ngram_accu'].sum()/len(df)
+    print("sentence accuracy without ngram", sensor_accu*100, '%')
+    print("sentence accuracy with ngram", ngram_accu*100, '%')

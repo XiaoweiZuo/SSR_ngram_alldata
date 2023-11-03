@@ -77,7 +77,7 @@ def find_score_dict(class_dict, arr):
 
 def get_candidates(score_dict):
     rank = sorted(score_dict.items(), key=lambda x: x[1])
-    print(rank)
+    # print(rank)
     # return rank[:top_k_words]
     return rank
 
