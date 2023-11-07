@@ -20,7 +20,7 @@ def norepeat(mystring):
     mystring = mystring.split()
     norepeat = mystring[0]+' '  # 1st word
     for i, word in enumerate(mystring):
-        if i >0:
+        if i > 0:
             if word != mystring[i-1]:
                 norepeat += word + " "
     norepeat = norepeat.rstrip()
@@ -37,6 +37,7 @@ def get_df(data, word_index, empty_cols):
 
     df['pred_decoded'] = df.apply(lambda row: decode(word_index, row['pred']), axis=1)
     df['pred_decoded_norepeat'] = df.apply(lambda row: norepeat(row['pred_decoded']), axis=1)
+    df['preferred_length'] = df.apply(lambda row: len(row['pred_decoded_norepeat'].split()), axis=1)
 
     # df['sensor_accu'] = df.apply(lambda row: 1 if row['pred_decoded_norepeat'] == row['real_truth'] else 0, axis=1)
 

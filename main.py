@@ -43,11 +43,11 @@ if __name__ == '__main__':
     filename = 'df.csv'
     df.to_csv(filename)
 
-    final_name = 'local_swap_DNA'
+    final_name = 'local_swap_DNLH'
     swap_status = True
 
     # If localngram
-    train.create_pickel('visual_signals_DoNotAttempt.txt')
+    train.create_pickel('visual_signals_DoNotLandHere.txt')
     with open('localngram.pkl', 'rb') as f:
         googlengram = pkl.load(f)
     # # If googlengram
@@ -56,8 +56,11 @@ if __name__ == '__main__':
 
     for data_num in range(len(df)):
         # print("Next data point:", data_num)
-
-        output, googlengram = balancescores.one_data_point(data, word_index, class_dict, data_num, googlengram, swap=swap_status)
+        length = df.iloc[data_num]['preferred_length']
+        for n in reversed(range(length+1)):  # if length=5, then: 5,4,3,2,1,0
+            output, googlengram = balancescores.one_data_point(data, word_index, class_dict, data_num, googlengram, n, swap=swap_status)
+            if output[-1] != '':
+                break
         row = create_new_row(data_num, df, empty_cols, output)
 
         with open(filename, 'a', newline='') as f:

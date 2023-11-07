@@ -20,11 +20,11 @@ def get_sorted_final(ngram_dict, sensor_dict):
     return sorted_final
 
 
-def one_data_point(data, word_index, class_dict, data_num, googlengram, swap=False):
+def one_data_point(data, word_index, class_dict, data_num, googlengram, length, swap=False):
     # data, word_index, class_dict, df = preprocessing.output(filename)
     word_dicts, sentences, full_rank = mycombination.get_combo(data, word_index, class_dict, data_num)
 
-    ngram_dict, googlengram = ngram.ngram_selection(sentences, googlengram, swap)  # ngram_dict is allowed
+    ngram_dict, googlengram = ngram.ngram_selection(sentences, googlengram, length, swap)  # ngram_dict is allowed
 
     dict_sensordist, sensor_dict, sorted_sensor = sensor.sort_by_sensor(word_dicts, ngram_dict)
 

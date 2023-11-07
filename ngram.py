@@ -33,11 +33,12 @@ def create_query(sent):
     return query_norepeat
 
 
-def get_ngram_score(allowed, sent, googlengram, swapped_idx = False):
+def get_ngram_score(allowed, sent, googlengram, length, swapped_idx=False):
     query = create_query(sent)
     if query == '':  # All NOISE
         ngram_score = 0
-    elif len(query.split()) > 5:  # Longer than 5gram, skip
+    # elif len(query.split()) > 5:  # Longer than 5gram, skip
+    elif len(query.split()) != length:
         ngram_score = 0
     elif query in googlengram:
         ngram_score = googlengram[query]
@@ -60,7 +61,7 @@ def get_ngram_score(allowed, sent, googlengram, swapped_idx = False):
     return allowed, googlengram
 
 
-def find_allowed(sentences, googlengram, swap=False):
+def find_allowed(sentences, googlengram, length, swap=False):
     allowed = []
     delay = 0.2
 
@@ -71,7 +72,7 @@ def find_allowed(sentences, googlengram, swap=False):
         while True:
             try:
                 # your request code here
-                allowed, googlengram = get_ngram_score(allowed, sent, googlengram)
+                allowed, googlengram = get_ngram_score(allowed, sent, googlengram, length)
                 break  # if the request was successful, break the loop
             except Exception as e:
                 time.sleep(delay)
@@ -97,7 +98,7 @@ def find_allowed(sentences, googlengram, swap=False):
                     while True:
                         try:
                             # your request code here
-                            allowed, googlengram = get_ngram_score(allowed, swapped, googlengram, j)
+                            allowed, googlengram = get_ngram_score(allowed, swapped, googlengram, length, swapped_idx=j)
                             break  # if the request was successful, break the loop
                         except Exception as e:
                             time.sleep(delay)
@@ -117,8 +118,8 @@ def find_allowed(sentences, googlengram, swap=False):
     return allowed_dict, googlengram
 
 
-def ngram_selection(sentences, googlengram, swap):
-    allowed, googlengram = find_allowed(sentences, googlengram, swap)
+def ngram_selection(sentences, googlengram, length, swap):
+    allowed, googlengram = find_allowed(sentences, googlengram, length, swap)
     # print("after ngram selection_unsort:", allowed)
 
     # P_big to P_small
